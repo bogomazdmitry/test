@@ -1,0 +1,740 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Confluence — Пространства</title>
+    <style>
+      :root {
+        --bg: #0b1220;
+        --panel: rgba(255, 255, 255, 0.06);
+        --panel-2: rgba(255, 255, 255, 0.09);
+        --text: rgba(255, 255, 255, 0.92);
+        --muted: rgba(255, 255, 255, 0.68);
+        --faint: rgba(255, 255, 255, 0.5);
+        --line: rgba(255, 255, 255, 0.12);
+        --brand: #5dd6ff;
+        --brand-2: #7c5cff;
+        --ok: #4ade80;
+        --warn: #fbbf24;
+        --danger: #fb7185;
+        --shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+        --radius: 16px;
+        --radius-sm: 12px;
+        --radius-xs: 10px;
+        --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell,
+          Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        height: 100%;
+      }
+
+      body {
+        margin: 0;
+        font-family: var(--font);
+        color: var(--text);
+        background:
+          radial-gradient(1200px 800px at 20% -10%, rgba(93, 214, 255, 0.25), transparent 60%),
+          radial-gradient(900px 600px at 90% 0%, rgba(124, 92, 255, 0.22), transparent 55%),
+          radial-gradient(800px 700px at 60% 110%, rgba(74, 222, 128, 0.12), transparent 55%),
+          linear-gradient(180deg, #060a14, var(--bg));
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .wrap {
+        max-width: 1120px;
+        padding: 28px 18px 60px;
+        margin: 0 auto;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 18px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .logo {
+        width: 36px;
+        height: 36px;
+        border-radius: 12px;
+        background:
+          radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.35), transparent 45%),
+          linear-gradient(135deg, var(--brand), var(--brand-2));
+        box-shadow: 0 10px 25px rgba(124, 92, 255, 0.25);
+      }
+
+      .brand h1 {
+        font-size: 14px;
+        margin: 0;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      .brand strong {
+        display: block;
+        font-size: 18px;
+        letter-spacing: 0;
+        text-transform: none;
+        color: var(--text);
+        margin-top: 2px;
+      }
+
+      .actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .btn {
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.04);
+        color: var(--text);
+        padding: 10px 12px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 13px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        transition: transform 0.12s ease, background 0.12s ease, border-color 0.12s ease;
+        user-select: none;
+      }
+
+      .btn:hover {
+        background: rgba(255, 255, 255, 0.07);
+        border-color: rgba(255, 255, 255, 0.18);
+        transform: translateY(-1px);
+      }
+
+      .btn:active {
+        transform: translateY(0px);
+      }
+
+      .btn.primary {
+        border: none;
+        background: linear-gradient(135deg, rgba(93, 214, 255, 0.92), rgba(124, 92, 255, 0.92));
+        color: #0b1220;
+        box-shadow: 0 14px 40px rgba(93, 214, 255, 0.22);
+      }
+
+      .btn.primary:hover {
+        filter: brightness(1.03);
+      }
+
+      .btn svg {
+        width: 16px;
+        height: 16px;
+        opacity: 0.92;
+      }
+
+      .card {
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.035));
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+
+      .card-head {
+        padding: 18px 18px 14px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 14px;
+        align-items: start;
+      }
+
+      .title {
+        margin: 0;
+        font-size: 22px;
+        letter-spacing: -0.01em;
+      }
+
+      .subtitle {
+        margin: 6px 0 0;
+        color: var(--muted);
+        line-height: 1.35;
+        font-size: 14px;
+      }
+
+      .filters {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+        margin-top: 14px;
+      }
+
+      .search {
+        position: relative;
+      }
+
+      .search input {
+        width: 100%;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        color: var(--text);
+        padding: 12px 12px 12px 38px;
+        border-radius: 14px;
+        outline: none;
+        font-size: 14px;
+      }
+
+      .search input::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+      }
+
+      .search input:focus {
+        border-color: rgba(93, 214, 255, 0.55);
+        box-shadow: 0 0 0 4px rgba(93, 214, 255, 0.13);
+      }
+
+      .search .icon {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        opacity: 0.75;
+      }
+
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding-top: 4px;
+      }
+
+      .chip {
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: rgba(255, 255, 255, 0.04);
+        padding: 7px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        color: var(--muted);
+        cursor: pointer;
+        transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+      }
+
+      .chip[data-active="true"] {
+        border-color: rgba(93, 214, 255, 0.45);
+        color: rgba(255, 255, 255, 0.9);
+        background: rgba(93, 214, 255, 0.12);
+      }
+
+      .content {
+        padding: 16px 18px 18px;
+      }
+
+      .meta {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+
+      .count {
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      .note {
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.55);
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap: 12px;
+      }
+
+      .space {
+        grid-column: span 6;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.11);
+        border-radius: var(--radius-sm);
+        padding: 14px;
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 12px;
+        transition: transform 0.14s ease, border-color 0.14s ease, background 0.14s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .space::before {
+        content: "";
+        position: absolute;
+        inset: -1px;
+        background: radial-gradient(650px 240px at 25% 0%, rgba(93, 214, 255, 0.14), transparent 60%);
+        opacity: 0;
+        transition: opacity 0.14s ease;
+        pointer-events: none;
+      }
+
+      .space:hover {
+        transform: translateY(-2px);
+        background: rgba(255, 255, 255, 0.055);
+        border-color: rgba(255, 255, 255, 0.17);
+      }
+
+      .space:hover::before {
+        opacity: 1;
+      }
+
+      .avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 14px;
+        background: linear-gradient(135deg, rgba(93, 214, 255, 0.24), rgba(124, 92, 255, 0.22));
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        display: grid;
+        place-items: center;
+        font-weight: 800;
+        letter-spacing: 0.02em;
+        color: rgba(255, 255, 255, 0.92);
+      }
+
+      .space h3 {
+        margin: 0;
+        font-size: 15px;
+        letter-spacing: -0.01em;
+        line-height: 1.2;
+      }
+
+      .space .key {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-left: 8px;
+        font-size: 11px;
+        color: rgba(255, 255, 255, 0.62);
+        padding: 2px 8px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: rgba(0, 0, 0, 0.15);
+      }
+
+      .desc {
+        margin: 7px 0 10px;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.4;
+      }
+
+      .row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+      }
+
+      .badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      .badge {
+        font-size: 11px;
+        padding: 4px 8px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: rgba(255, 255, 255, 0.035);
+        color: rgba(255, 255, 255, 0.74);
+      }
+
+      .badge.ok {
+        border-color: rgba(74, 222, 128, 0.28);
+        background: rgba(74, 222, 128, 0.11);
+      }
+
+      .badge.warn {
+        border-color: rgba(251, 191, 36, 0.28);
+        background: rgba(251, 191, 36, 0.11);
+      }
+
+      .badge.danger {
+        border-color: rgba(251, 113, 133, 0.28);
+        background: rgba(251, 113, 133, 0.11);
+      }
+
+      .link {
+        font-size: 12px;
+        color: rgba(93, 214, 255, 0.9);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .link:hover {
+        text-decoration: underline;
+      }
+
+      .footer {
+        margin-top: 14px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        color: rgba(255, 255, 255, 0.55);
+        font-size: 12px;
+      }
+
+      .kbd {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+          "Courier New", monospace;
+        font-size: 11px;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: rgba(0, 0, 0, 0.18);
+        padding: 2px 6px;
+        border-radius: 8px;
+        color: rgba(255, 255, 255, 0.76);
+      }
+
+      @media (max-width: 980px) {
+        .space {
+          grid-column: span 12;
+        }
+
+        .card-head {
+          grid-template-columns: 1fr;
+        }
+
+        .actions {
+          justify-content: flex-start;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          transition: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="topbar">
+        <div class="brand" aria-label="Confluence mock">
+          <div class="logo" aria-hidden="true"></div>
+          <div>
+            <h1>Confluence</h1>
+            <strong>Список пространств</strong>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn" id="btnRefresh" type="button" title="Обновить">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M20 12a8 8 0 1 1-2.34-5.66"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+              <path
+                d="M20 4v6h-6"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+            Обновить
+          </button>
+          <button class="btn primary" id="btnCreate" type="button" title="Создать пространство">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M12 5v14"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+              <path
+                d="M5 12h14"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+            </svg>
+            Создать
+          </button>
+        </div>
+      </div>
+
+      <section class="card" aria-label="Confluence spaces list">
+        <header class="card-head">
+          <div>
+            <h2 class="title">Пространства Confluence</h2>
+            <p class="subtitle">
+              Быстрый поиск по названию и ключу. Данные — мок для демонстрации интерфейса.
+            </p>
+            <div class="filters">
+              <div class="search">
+                <span class="icon" aria-hidden="true">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M11 19a8 8 0 1 1 0-16 8 8 0 0 1 0 16Z"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    />
+                    <path
+                      d="M21 21l-4.3-4.3"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                </span>
+                <input
+                  id="q"
+                  type="search"
+                  placeholder="Поиск: например, PLATFORM или Дизайн"
+                  autocomplete="off"
+                />
+              </div>
+              <div class="chips" role="group" aria-label="Фильтры">
+                <button class="chip" type="button" data-filter="all" data-active="true">Все</button>
+                <button class="chip" type="button" data-filter="public">Публичные</button>
+                <button class="chip" type="button" data-filter="restricted">Ограниченные</button>
+                <button class="chip" type="button" data-filter="archived">Архив</button>
+              </div>
+            </div>
+          </div>
+          <div class="note">
+            Подсказка: <span class="kbd">/</span> — фокус на поиск
+          </div>
+        </header>
+
+        <div class="content">
+          <div class="meta">
+            <div class="count" id="count"></div>
+            <div class="note" id="status"></div>
+          </div>
+
+          <div class="grid" id="grid" aria-live="polite"></div>
+
+          <div class="footer">
+            <div>Mock UI • Confluence Spaces</div>
+            <div>Навигация: <span class="kbd">Tab</span> • Поиск: <span class="kbd">Enter</span></div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      const spaces = [
+        {
+          name: 'Платформа',
+          key: 'PLATFORM',
+          visibility: 'restricted',
+          pages: 842,
+          updated: 'сегодня',
+          owner: 'Platform Team',
+          description: 'Архитектура, гайды, релизы и внутренние договорённости по платформе.',
+        },
+        {
+          name: 'Дизайн-система',
+          key: 'DS',
+          visibility: 'public',
+          pages: 216,
+          updated: 'вчера',
+          owner: 'Design Ops',
+          description: 'Компоненты, токены, паттерны и примеры использования для продуктовых команд.',
+        },
+        {
+          name: 'Инциденты и RCA',
+          key: 'INC',
+          visibility: 'restricted',
+          pages: 154,
+          updated: '3 дня назад',
+          owner: 'SRE',
+          description: 'Разборы, постмортемы и рекомендации по устойчивости систем.',
+        },
+        {
+          name: 'Product Roadmap',
+          key: 'ROAD',
+          visibility: 'public',
+          pages: 67,
+          updated: 'неделю назад',
+          owner: 'PMO',
+          description: 'Квартальные цели, ключевые инициативы и статус доставки.',
+        },
+        {
+          name: 'Онбординг',
+          key: 'HRONB',
+          visibility: 'public',
+          pages: 98,
+          updated: '2 недели назад',
+          owner: 'People',
+          description: 'Первые шаги, доступы, процессы, шаблоны и полезные ссылки.',
+        },
+        {
+          name: 'Legacy Docs (архив)',
+          key: 'LEG',
+          visibility: 'archived',
+          pages: 390,
+          updated: '4 месяца назад',
+          owner: '—',
+          description: 'Устаревшая документация. Использовать только для поиска исторического контекста.',
+        },
+      ];
+
+      const q = document.getElementById('q');
+      const grid = document.getElementById('grid');
+      const count = document.getElementById('count');
+      const status = document.getElementById('status');
+      const chips = Array.from(document.querySelectorAll('.chip'));
+
+      function initials(name) {
+        const parts = name.split(/\s+/).filter(Boolean);
+        const a = (parts[0] || '?')[0];
+        const b = (parts[1] || parts[0] || '?')[0];
+        return (a + b).toUpperCase();
+      }
+
+      function badgeForVisibility(v) {
+        if (v === 'public') return { label: 'Публичное', cls: 'ok' };
+        if (v === 'restricted') return { label: 'Ограниченное', cls: 'warn' };
+        if (v === 'archived') return { label: 'Архив', cls: 'danger' };
+        return { label: v, cls: '' };
+      }
+
+      function setActiveFilter(filter) {
+        chips.forEach((c) => c.setAttribute('data-active', String(c.dataset.filter === filter)));
+      }
+
+      function getActiveFilter() {
+        const active = chips.find((c) => c.getAttribute('data-active') === 'true');
+        return active?.dataset.filter || 'all';
+      }
+
+      function render() {
+        const query = (q.value || '').trim().toLowerCase();
+        const filter = getActiveFilter();
+
+        const items = spaces
+          .filter((s) => {
+            if (filter === 'all') return true;
+            return s.visibility === filter;
+          })
+          .filter((s) => {
+            if (!query) return true;
+            return (
+              s.name.toLowerCase().includes(query) ||
+              s.key.toLowerCase().includes(query) ||
+              s.owner.toLowerCase().includes(query)
+            );
+          });
+
+        count.textContent = `Найдено: ${items.length} из ${spaces.length}`;
+        status.textContent = query ? `Фильтр: “${query}”` : `Фильтр: ${filter === 'all' ? 'все' : filter}`;
+
+        grid.innerHTML = '';
+
+        for (const s of items) {
+          const { label, cls } = badgeForVisibility(s.visibility);
+          const el = document.createElement('a');
+          el.className = 'space';
+          el.href = '#';
+          el.setAttribute('role', 'article');
+          el.setAttribute('aria-label', `${s.name} (${s.key})`);
+
+          el.innerHTML = `
+            <div class="avatar" aria-hidden="true">${initials(s.name)}</div>
+            <div>
+              <div style="display:flex; align-items:baseline; flex-wrap:wrap; gap:8px;">
+                <h3>${s.name}<span class="key">${s.key}</span></h3>
+              </div>
+              <div class="desc">${s.description}</div>
+              <div class="row">
+                <div class="badges">
+                  <span class="badge ${cls}">${label}</span>
+                  <span class="badge">Страниц: ${s.pages}</span>
+                  <span class="badge">Обновлено: ${s.updated}</span>
+                </div>
+                <span class="link" aria-hidden="true">
+                  Открыть
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none">
+                    <path d="M7 17L17 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                    <path
+                      d="M9 7h8v8"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </span>
+              </div>
+            </div>
+          `;
+
+          el.addEventListener('click', (e) => {
+            e.preventDefault();
+            status.textContent = `Открыто: ${s.key} • владелец: ${s.owner}`;
+          });
+
+          grid.appendChild(el);
+        }
+
+        if (items.length === 0) {
+          const empty = document.createElement('div');
+          empty.style.padding = '18px';
+          empty.style.border = '1px dashed rgba(255,255,255,0.18)';
+          empty.style.borderRadius = '14px';
+          empty.style.color = 'rgba(255,255,255,0.72)';
+          empty.textContent = 'Ничего не найдено. Попробуйте изменить запрос или фильтр.';
+          grid.appendChild(empty);
+        }
+      }
+
+      q.addEventListener('input', render);
+      chips.forEach((c) =>
+        c.addEventListener('click', () => {
+          setActiveFilter(c.dataset.filter);
+          render();
+        })
+      );
+
+      document.getElementById('btnRefresh').addEventListener('click', () => {
+        status.textContent = 'Обновлено: только демонстрация (мок).';
+        render();
+      });
+
+      document.getElementById('btnCreate').addEventListener('click', () => {
+        status.textContent = 'Создание пространства: недоступно в мок-странице.';
+      });
+
+      window.addEventListener('keydown', (e) => {
+        if (e.key === '/' && document.activeElement !== q) {
+          e.preventDefault();
+          q.focus();
+        }
+      });
+
+      render();
+    </script>
+  </body>
+</html>
